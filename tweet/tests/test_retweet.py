@@ -32,6 +32,6 @@ class RetweetRoutesTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 405)  # 405 Method Not Allowed
 
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     unittest.main()
 
