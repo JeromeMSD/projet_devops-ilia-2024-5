@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from routes.blueprint import bp
+from src.routes.blueprint import bp
 
 @bp.route('/retweet/<int:tweetId>', methods=['POST'])
 def retweet_tweet(tweetId):
