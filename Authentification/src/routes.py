@@ -3,6 +3,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from Authentification.src import app, db
 from Authentification.src.models.example_model import User
 
+
 @jwt_required()
 def refresh_token_if_needed():
     current_user = get_jwt_identity()
