@@ -1,10 +1,10 @@
 import pytest
 import sys
 import os 
+import json
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),'../src')))
 from app import create_app
-
 
 @pytest.fixture
 def client():
@@ -13,26 +13,15 @@ def client():
     with app.test_client() as client:
         yield client
 
-
-#def test_get_users(client):
-#    response = client.get('/users')
-#    assert response.status_code == 200
-#    assert isinstance(response.json, list)
-
 def test_get_tweet_reactions(client):
     tweet_id = 1
     response = client.get(f'/tweets/{tweet_id}/reactions')
     
+    # Ajoutons des prints pour debug
+    print(f"\nStatus Code: {response.status_code}")
+    print(f"Response Data: {response.data}")
+    if response.data:
+        print(f"Response JSON: {json.loads(response.data)}")
+    
     assert response.status_code == 200
     assert isinstance(response.json, list)
-
-
-
-#def test_get_tweet_reactions(client):
-    # Simulate fetching reactions for a tweet with a non-existent endpoint
-#    tweet_id = 1
-#    response = client.get(f'/tweets/{tweet_id}/reactions')
-    
-    # Assert that the route does not exist or is not yet implemented
-#    assert response.status_code == 404  # Expecting "Not Found"
-#    assert response.json is None or response.json.get("error") == "Not Implemented"
