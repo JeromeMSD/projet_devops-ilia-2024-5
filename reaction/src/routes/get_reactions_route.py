@@ -1,6 +1,6 @@
 
 from flask import Blueprint, jsonify
-from services.get_reactions_services import get_tweet_reactions
+from services.get_reactions_from_tweet_services import get_tweet_reactions
 
 tweet_reaction_bp = Blueprint('tweet_reactions', __name__)
 
