@@ -7,7 +7,7 @@ dev:
 build-dev:
 	docker build -t tweet-dev -f ./Dockerfile.dev . 
 test:
-	docker run -v .:/app -e PYTHONPATH=/app --name tweet-test --rm tweet-test
+	docker run -v "/$(shell pwd | sed 's/\\//g'):/app" -e PYTHONPATH=/app --name tweet-test --rm tweet-test
 build-test:
 	docker build -t tweet-test -f ./Dockerfile.test . 
 swagger:
