@@ -1,0 +1,43 @@
+name: Build and Push to Artifact Registry
+author: Quentin DAVIN (itsax404)
+
+on:
+  push:
+    branches: ["Authentification", "main"]
+  pull_request:
+    branches: ["Authentification", "main"]
+
+env:
+  PROJECT_ID: polytech-dijon
+  REGION: europe-west1
+  GAR_LOCATION: europe-west1-docker.pkg.dev/polytech-dijon/polytech-dijon/authentification_service
+  WORKING_DIRECTORY: ./authentification
+
+job:
+  build-push-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+
+      - id: "auth"
+          uses: "google-github-actions/auth@v1"
+          with:
+            credentials_json: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v1"
+
+      - name: "Use gcloud CLI"
+        run: "gcloud info"
+
+      - name: "Docker auth"
+        run: |-
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build image
+        run: docker build . --file DOCKERFILE --tag ${{ env.GAR_LOCATION }}
+        working-directory: env.WORKING_DIRECTORY
+
+      - name: Push image
+        run: docker push ${{ env.GAR_LOCATION }}

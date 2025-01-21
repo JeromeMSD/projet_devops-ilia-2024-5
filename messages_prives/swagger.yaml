@@ -1,0 +1,111 @@
+openapi: 3.0.0
+info:
+  title: Swagger API Messages Privés Polytex
+  version: 0.0.1
+  description: API pour la gestion des messages privés dans Polytex.
+tags:
+  - name: private_message
+    description: Toutes les routes pour les messages privés
+paths:
+  /messages:
+    post:
+      tags:
+        - private_message
+      summary: Envoyer un message privé
+      operationId: sendMessage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sender:
+                  type: string
+                  description: ID de l'expéditeur
+                receiver:
+                  type: string
+                  description: ID du destinataire
+                content:
+                  type: string
+                  description: Contenu du message
+              required:
+                - sender
+                - receiver
+                - content
+      responses:
+        '200':
+          description: Message envoyé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messageId:
+                    type: string
+                    description: ID unique du message
+        '400':
+          description: Requête invalide (paramètres manquants ou incorrects)
+          
+  /messages/{user1}/{user2}:
+    get:
+      tags:
+        - private_message
+      summary: Récupérer les messages entre deux utilisateurs
+      operationId: getMessages
+      parameters:
+        - name: user1
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du premier utilisateur
+        - name: user2
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du second utilisateur
+      responses:
+        '200':
+          description: Liste des messages entre deux utilisateurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    messageId:
+                      type: string
+                    sender:
+                      type: string
+                    receiver:
+                      type: string
+                    content:
+                      type: string
+        '400':
+          description: Requête invalide
+        '404':
+          description: Aucun message trouvé
+
+  /messages/{message_id}:
+    put:
+      tags:
+        - private_message
+      summary: Marquer un message comme lu
+      operationId: markMessageAsRead
+      parameters:
+        - name: message_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du message à marquer comme lu
+      responses:
+        '200':
+          description: Message marqué comme lu avec succès
+        '404':
+          description: Message introuvable
+        '400':
+          description: Requête invalide
