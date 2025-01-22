@@ -1,0 +1,17 @@
+body
+{
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+
+    display: flex;
+    flex-flow: row nowrap;
+
+    align-items: center;
+    justify-content: center;
+}
+
+#login-box
+{
+    
+}

@@ -40,11 +40,11 @@ def test_add_reaction(client, redis_client):
     assert response_data["message"] == "Réaction ajoutée avec succès."
 
     # Vérifier que la réaction est stockée dans Redis
-    reactions = redis_client.lrange(f"comment:{comment_id}:reactions", 0, -1)
+    reactions = eval(redis_client.get(f"comment:{comment_id}:reactions"))
     assert len(reactions) == 1
 
     # Convertir la chaîne de Redis en dictionnaire Python
-    stored_reaction = eval(reactions[0].decode())
+    stored_reaction = reactions[0]
 
     # Vérifier les données stockées
     assert stored_reaction["user_id"] == data["user_id"]

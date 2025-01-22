@@ -3,7 +3,7 @@ from services.reaction_tweet_service import add_tweet_reaction
 
 reaction_bp = Blueprint('reaction_bp', __name__)
 
-@reaction_bp.route('/tweets/<int:tweet_id>/reactions', methods=['POST'])
+@reaction_bp.route('/tweets/<tweet_id>/reactions', methods=['POST'])
 def add_reaction(tweet_id):
     try:
         # Récupérer les données de la requête

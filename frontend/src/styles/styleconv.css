@@ -1,0 +1,117 @@
+/* Corps général */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f8fa;
+}
+
+/* Conteneur principal */
+.selection-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0; /* Supprime le padding pour que le contenu occupe tout l'espace */
+    background-color: #ffffff;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* En-tête avec flèche et titre */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Aligne les éléments sur les extrémités */
+    padding: 10px 15px; /* Espacement à l'intérieur de l'en-tête */
+    background-color: #f694c1;
+    border-radius: 8px 8px 0 0;
+    color: #14171a;
+}
+
+.back-arrow {
+    font-size: 24px;
+    text-decoration: none;
+    color: #14171a; /* Blanc pour contraster avec le fond */
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+h2 {
+    flex-grow: 1; /* Permet au titre de prendre de l'espace */
+    text-align: center;
+    margin: 0;
+    font-size: 18px;
+}
+
+/* Barre de recherche */
+.search-bar {
+    margin: 0;
+    padding: 10px 15px; /* Correspond au padding de .header */
+    background-color: #ffffff;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline-color: #f694c1;
+    box-sizing: border-box;
+}
+
+/* Liste des conversations */
+.conversation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 15px; /* Correspond au padding de .header */
+}
+
+.conversation-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.conversation-item:hover {
+    background-color: #ffe5ef;
+}
+
+.conversation-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.conversation-item .details {
+    display: flex;
+    flex-direction: column;
+}
+
+.conversation-item .name {
+    font-weight: bold;
+    color: #14171a;
+}
+
+.conversation-item .preview {
+    font-size: 0.9em;
+    color: #657786;
+}
+.conversation-item .meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    color: #999999;
+}
+
+.conversation-item .meta .time {
+    margin-right: 15px;
+}
+

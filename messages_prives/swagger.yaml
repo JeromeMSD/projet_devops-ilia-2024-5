@@ -21,7 +21,7 @@ paths:
               type: object
               properties:
                 sender:
-                  type: string
+                  type: integer
                   description: ID de l'expéditeur
                 receiver:
                   type: string
@@ -77,7 +77,7 @@ paths:
                   type: object
                   properties:
                     messageId:
-                      type: string
+                      type: integer
                     sender:
                       type: string
                     receiver:
@@ -100,7 +100,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
           description: ID du message à marquer comme lu
       responses:
         '200':

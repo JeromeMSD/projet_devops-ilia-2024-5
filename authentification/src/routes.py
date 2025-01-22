@@ -1,8 +1,9 @@
-from flask import request, jsonify
+from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from config import app, db
-from models.example_model import User
+from config import db, app
+from models.user import User
 
+route = Blueprint('routes', __name__, static_folder='static', template_folder='templates')
 
 @jwt_required()
 def refresh_token_if_needed():
@@ -12,14 +13,14 @@ def refresh_token_if_needed():
 
 
 # Endpoint pour l'incription
-@app.route("/auth/sign_in", methods=["POST"])
+@route.route("/auth/sign_in", methods=["POST"])
 def sign_in():
     data = request.get_json()
     if not data:
         return jsonify({"message": "Données manquantes"}), 400
 
-    nom = data.get("nom")
-    prenom = data.get("prenom")
+    nom = data.get("lastName")
+    prenom = data.get("firstName")
     email = data.get("email")
     password = data.get("password")
     username = data.get("username")
@@ -28,10 +29,13 @@ def sign_in():
     if not all([nom, prenom, email, password, username, pseudo]):
         return jsonify({"message": "Tous les champs sont obligatoires"}), 400
 
-    if User.query.filter_by(username=username).first() or User.query.filter_by(email=email).first():
-        return jsonify({"message": "Nom d'utilisateur ou email déjà utilisé"}), 409
+    if User.query.filter_by(username=username).first():
+        return jsonify({"message": "Nom d'utilisateur déjà utilisé"}), 409
+    elif  User.query.filter_by(email=email).first():
+        return jsonify({"message": "Email déjà utilisé"}), 409
 
-    new_user = User(nom=nom, prenom=prenom, email=email, password=password, username=username, pseudo=pseudo)
+    new_user = User(last_name=nom, first_name=prenom, email=email, username=username, pseudo=pseudo)
+    new_user.set_password(password)
     db.session.add(new_user)
     db.session.commit()
 
@@ -39,17 +43,26 @@ def sign_in():
 
 
 # Endpoint pour la connexion
-@app.route("/auth/login", methods=["POST"])
+@route.route("/auth/login", methods=["POST"])
 def login():
     data = request.get_json()
-    username_or_email = data.get("username_or_email")
+    username = data.get("username")
+    email = data.get("email")
+    id = ""
+    if not username and email:
+        id = email
+    elif not email and username:
+        id = username
+    else:
+         return jsonify({"message": "Nom d'utilisateur (ou l'email) requis"}), 400
+
     password = data.get("password")
 
-    if not username_or_email or not password:
+    if not password:
         return jsonify({"message": "Nom d'utilisateur ou mot de passe requis"}), 400
 
-    user = User.query.filter((User.username == username_or_email) | (User.email == username_or_email)).first()
-    if user and user.password == password:
+    user = User.query.filter((User.username == id) | (User.email == id)).first()
+    if user and user.check_password(password):
         access_token = create_access_token(identity=user.username)
         return jsonify({"token": access_token}), 200
 
@@ -57,18 +70,23 @@ def login():
 
 
 # Endpoint pour récupérer les informations d'un utilisateur
-@app.route("/users/<username>", methods=["GET"])
-@jwt_required()
+@route.route("/users/<username>", methods=["GET"])
+@jwt_required(optional=True)
 def get_user(username):
     user = User.query.filter_by(username=username).first()
     if not user:
         return jsonify({"message": "Utilisateur non trouvé"}), 404
 
-    return jsonify(user.basic_info()), 200
-
+    current_identity = get_jwt_identity()
+    if current_identity:
+        if current_identity != username:
+            return jsonify({"message": "Accès non autorisé"}), 403
+        return jsonify(user.to_dict()), 200
+    else:
+        return jsonify(user.to_dict_min()), 200
 
 # Endpoint pour supprimer un utilisateur
-@app.route("/users/<username>", methods=["DELETE"])
+@route.route("/users/<username>", methods=["DELETE"])
 @jwt_required()
 def delete_user(username):
     try:
@@ -88,7 +106,7 @@ def delete_user(username):
 
 
 # Endpoint pour mettre à jour les informations de l'utilisateur
-@app.route("/users/<username>", methods=["PUT"])
+@route.route("/users/<username>", methods=["PUT"])
 @jwt_required()
 def update_user(username):
     try:
@@ -98,19 +116,33 @@ def update_user(username):
 
         data = request.get_json()
 
+        app.logger.info(f"type data : {type(data)} | data : {data}")
+
         user = User.query.filter_by(username=username).first()
         if not user:
             return jsonify({"message": "Utilisateur non trouvé"}), 404
 
+        for key in data.keys():
+            if key not in ["lastName", "firstName", "email", "password", "pseudo"]:
+                return jsonify({"message": "Mauvais paramètre fourni"}), 401
+
         # Mise à jour des informations de l'utilisateur
-        user.nom = data.get("nom", user.nom)
-        user.prenom = data.get("prenom", user.prenom)
-        user.email = data.get("email", user.email)
-        user.password = data.get("password", user.password)
-        user.pseudo = data.get("pseudo", user.pseudo)
+        
+        if("lastName" in data.keys()):
+            user.last_name = data.get("lastName", user.last_name) 
+        if("firstName" in data.keys()):
+            user.first_name = data.get("firstName", user.first_name)
+        if("email" in data.keys()):
+            user.email = data.get("email", user.email)
+        if("password" in data.keys()):
+            user.set_password(data.get("password", user.password))
+        if("pseudo" in data.keys()):
+            user.pseudo = data.get("pseudo", user.pseudo)
+
+
 
         db.session.commit()
-        return jsonify(user.to_dict()), 200
+        return jsonify({"message": "L'utilisation a bien été modifié"}), 200
 
     except Exception as e:
         return jsonify({"message": "Erreur interne du serveur", "error": str(e)}), 500

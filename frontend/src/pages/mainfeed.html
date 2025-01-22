@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flux de Tweets</title>
+    <link href="../styles/mainfeed.css" rel="stylesheet">
+</head>
+<body>
+    <div id="entete">
+        <div id="titreComplet">
+            <h1 id="titlePolyte">Polyte</h1>
+            <h1 id="titleX">X</h1>
+        </div>
+        <div id="enteteButtons">
+            <button id="acceuilBtn">Acceuil</button>
+            <button id="messagesPrivesBtn">Messages Privés</button>
+            <button id="rechercherBtn">Rechercher</button>
+        </div>
+        <div id="monProfil">
+            <a href=""><h2 id="monNom">Huguette231</h2></a>
+            <img id="maPhoto" src="../../data/huguette.avif">
+        </div>
+    </div>
+
+    <div id="zoneTweets">
+        <div class="tweet">
+            <h3>@MichelMichel</h3>
+            <p>Ceci est mon premier tweet sur PolyteX. !</p>
+            <div id="zoneInterraction">
+                <button id="likeButton">
+                    <img id="like" src="../../data/coeur.png" />
+                </button>
+                <button id="commentButton">
+                    <img id="commentaire" src="../../data/commentaire.jpeg" />
+                </button>
+                <button id="shareButton">
+                    <img id="share" src="../../data/partage.png" />
+                </button>
+            </div>
+        </div>
+
+        <div class="tweet">
+            <h3>@Huguette231</h3>
+            <p>Moi aussi je tweet. </p>
+            <div id="zoneInterraction">
+                <button id="likeButton">
+                    <img id="like" src="../../data/coeur.png" />
+                </button>
+                <button id="commentButton">
+                    <!-- Correction du chemin si nécessaire -->
+                    <img id="commentaire" src="../../data/commentaire.jpeg" />
+                </button>
+                <button id="shareButton">
+                    <img id="share" src="../../data/partage.png" />
+                </button>
+            </div>
+        </div>
+
+        <div class="tweet">
+            <h3>@Ulysses</h3>
+            <p>Je hais le café et j'adore le grec ancien!</p>
+            <div id="zoneInterraction">
+                <button id="likeButton">
+                    <img id="like" src="../../data/coeur.png" />
+                </button>
+                <button id="commentButton">
+                    <img id="commentaire" src="../../data/commentaire.jpeg" />
+                </button>
+                <button id="shareButton">
+                    <img id="share" src="../../data/partage.png" />
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="../js/mainfeed.js"></script>
+</body>
+</html>

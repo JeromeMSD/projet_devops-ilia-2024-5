@@ -1,0 +1,129 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.messagerie-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background-color: #ffe3eb;
+    border-bottom: 1px solid #ddd;
+}
+
+.header .profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.header .profile-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.header .profile-info .username {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.header .actions {
+    display: flex;
+    align-items: center;
+}
+
+.header .actions button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    margin-left: 10px;
+    cursor: pointer;
+    color: #666;
+}
+
+/* Chat Area */
+.chat-area {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.chat-message {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.chat-message.sent {
+    justify-content: flex-end;
+}
+
+.chat-message .message {
+    max-width: 70%;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #ffe3eb;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.chat-message.sent .message {
+    background-color: #cce9f9;
+}
+
+/* Footer */
+.footer {
+    padding: 10px 15px;
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+}
+
+.footer button {
+    background-color: #ff83a7;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.footer button:hover {
+    background-color: #e56f91;
+}
+
+.footer input {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 10px;
+    font-size: 14px;
+    outline: none;
+}
