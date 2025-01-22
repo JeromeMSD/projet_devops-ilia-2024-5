@@ -15,6 +15,9 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: root
       MYSQL_DATABASE: polytex
+    networks:
+      authentification_network:
+        ipv4_address: 192.168.1.2
 
   mysql:
     build:
@@ -25,6 +28,16 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-
+    networks:
+      authentification_network:
+        ipv4_address: 192.168.1.3
+        
 volumes:
   mysql-data:
+
+networks:
+  authentification_network:
+    ipam:
+      config:
+        - subnet: 192.168.1.0/29
+

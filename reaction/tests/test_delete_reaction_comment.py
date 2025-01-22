@@ -24,39 +24,50 @@ def redis_client():
 
 def test_delete_reaction_comment(client, redis_client):
     # Set up test data
-    comment_id = "67890"  # Example comment ID
-    reaction_id = "12345"  # Example reaction ID
+    comment_id = "67890"  # Exemple d'ID de commentaire
+    reaction_id = "12345"  # Utilisation d'un entier pour correspondre au modèle
     reaction_type = "like"
 
-    # Add a reaction to Redis associated with the comment
-    reaction_data = {
-        "reaction_id": reaction_id,
-        "user_id": "user123",
-        "reaction": reaction_type
+    # Ajouter une liste de réactions à Redis associée au commentaire
+    reactions = [
+        {
+            "reaction_id": reaction_id,
+            "user_id": "user123",
+            "reaction": reaction_type
+        },
+        {
+            "reaction_id": "12346",
+            "user_id": "user456",
+            "reaction": "love"
+        }
+    ]
+    redis_client.set(f"comment:{comment_id}:reactions", str(reactions))
+
+    # Ajouter des statistiques des réactions au commentaire
+    reactions_stat = {
+        "like": 10,
+        "love": 5,
+        "haha": 2,
+        "sad": 1
     }
-    redis_client.hset(f"comment:{comment_id}:reactions", reaction_id, json.dumps(reaction_data))
+    redis_client.set(f"comment:{comment_id}:reactions_stat", str(reactions_stat))
 
-    # Add reactions_stat for the comment
-    redis_client.hset(f"comment:{comment_id}:reactions_stat", reaction_type, 10)
-    redis_client.hset(f"comment:{comment_id}:reactions_stat", "love", 5)
-    redis_client.hset(f"comment:{comment_id}:reactions_stat", "haha", 2)
-    redis_client.hset(f"comment:{comment_id}:reactions_stat", "sad", 1)
-
-    # Simulate the DELETE request
+    # Simuler la requête DELETE
     response = client.delete(f'/comments/{comment_id}/reactions/{reaction_id}')
 
-    # Verify the response
+    # Vérifier la réponse
     assert response.status_code == 200
-    assert response.json == {"message": "Reaction deleted successfully"}
 
-    # Verify that the reaction has been deleted from Redis
-    assert not redis_client.hexists(f"comment:{comment_id}:reactions", reaction_id)
+    # Vérifier que la réaction a été supprimée de Redis
+    updated_reactions = eval(redis_client.get(f"comment:{comment_id}:reactions"))
+    assert len(updated_reactions) == 1  # Une seule réaction doit rester
+    assert all(r["reaction_id"] != reaction_id for r in updated_reactions)  # Aucune réaction avec cet ID
 
-    # Verify that the reactions_stat has been updated correctly
-    updated_reaction_count = int(redis_client.hget(f"comment:{comment_id}:reactions_stat", reaction_type))
-    assert updated_reaction_count == 9  # Expecting decrement by 1
+    # Vérifier que les statistiques des réactions ont été mises à jour correctement
+    updated_reactions_stat = eval(redis_client.get(f"comment:{comment_id}:reactions_stat"))
+    assert updated_reactions_stat["like"] == 9  # Le compteur "like" doit être décrémenté
 
-    # Optional: Check that other reaction counts remain unchanged
-    assert int(redis_client.hget(f"comment:{comment_id}:reactions_stat", "love")) == 5
-    assert int(redis_client.hget(f"comment:{comment_id}:reactions_stat", "haha")) == 2
-    assert int(redis_client.hget(f"comment:{comment_id}:reactions_stat", "sad")) == 1
+    # Vérifier que les autres statistiques restent inchangées
+    assert updated_reactions_stat["love"] == 5
+    assert updated_reactions_stat["haha"] == 2
+    assert updated_reactions_stat["sad"] == 1

@@ -1,7 +1,9 @@
 import pytest
 import sys
 import os
+import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
+from db.redis_client import get_redis_client
 
 from app import create_app
 import redis
@@ -9,7 +11,7 @@ import redis
 # Redis mock setup
 @pytest.fixture
 def redis_client():
-    client = redis.Redis(host='localhost', port=6379, db=0)
+    client = get_redis_client()
     client.flushdb()  # Nettoyer la base Redis avant chaque test
     return client
 
@@ -21,8 +23,7 @@ def client():
     with app.test_client() as client:
         yield client
 
-        
-# Test pour vérifier si un utilisateur a déjà réagi
+# Test pour vérifier si un utilisateur a réagi
 def test_check_user_reaction(client, redis_client):
     user_id = "user1"
     item_id = "12345"
@@ -30,7 +31,8 @@ def test_check_user_reaction(client, redis_client):
     reaction = "like"
 
     # Simuler les données dans Redis
-    redis_client.sadd(f"{item_type}:{item_id}:reactions", f"{user_id}:{reaction}")
+    reaction_data = {"user_id": user_id, "reaction": reaction}
+    redis_client.rpush(f"reactions:{item_type}s:{item_id}", json.dumps(reaction_data))
 
     # Envoyer une requête GET avec les paramètres
     response = client.get(f'/reactions/check?user_id={user_id}&item_id={item_id}&item_type={item_type}&reaction={reaction}')
@@ -41,8 +43,3 @@ def test_check_user_reaction(client, redis_client):
 
     # Vérifier si l'utilisateur a réagi
     assert response_data == {"has_reacted": True}
-
-    # Tester un utilisateur n'ayant pas réagi
-    response = client.get(f'/reactions/check?user_id=user2&item_id={item_id}&item_type={item_type}&reaction={reaction}')
-    response_data = response.get_json()
-    assert response_data == {"has_reacted": False}

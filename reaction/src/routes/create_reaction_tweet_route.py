@@ -15,10 +15,10 @@ def add_reaction(tweet_id):
             return jsonify({"error": "Les champs 'user_id' et 'reaction' sont obligatoires."}), 400
 
         # Ajouter la réaction via le service
-        success = add_tweet_reaction(tweet_id, user_id, reaction)
+        response = add_tweet_reaction(tweet_id, user_id, reaction)
 
-        if success:
-            return jsonify({"message": "Réaction ajoutée avec succès."}), 201
+        if response['success']:
+            return jsonify({"message": "Réaction ajoutée avec succès.", "reaction_id": response["reaction_id"]}), 201
         else:
             return jsonify({"error": "Impossible d'ajouter la réaction."}), 500
     except Exception as e:

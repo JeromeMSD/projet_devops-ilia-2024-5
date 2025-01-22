@@ -2,6 +2,7 @@ import pytest
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
+from db.redis_client import get_redis_client
 
 from app import create_app
 import redis
@@ -9,7 +10,7 @@ import redis
 # Redis mock setup
 @pytest.fixture
 def redis_client():
-    client = redis.Redis(host='localhost', port=6379, db=0)
+    client = get_redis_client()
     client.flushdb()  # Nettoyer la base Redis avant chaque test
     return client
 
@@ -25,12 +26,19 @@ def client():
 def test_get_tweet_reaction_stats(client, redis_client):
     tweet_id = "12345"
 
-    # Simuler les statistiques des réactions dans Redis
-    redis_client.hset(f"tweet:{tweet_id}:reactions_stat", mapping={
-        "like": 10,
-        "love": 5,
-        "haha": 2
-    })
+    # Simuler les réactions dans Redis
+    redis_client.rpush(f"reactions:tweets:{tweet_id}", 
+        '{"user_id": "1", "reaction": "like"}',
+        '{"user_id": "2", "reaction": "love"}',
+        '{"user_id": "3", "reaction": "like"}',
+        '{"user_id": "4", "reaction": "haha"}',
+        '{"user_id": "5", "reaction": "like"}',
+        '{"user_id": "6", "reaction": "love"}',
+        '{"user_id": "7", "reaction": "haha"}',
+        '{"user_id": "8", "reaction": "like"}',
+        '{"user_id": "9", "reaction": "love"}',
+        '{"user_id": "10", "reaction": "like"}'
+    )
 
     # Envoyer une requête GET à la route
     response = client.get(f'/tweets/{tweet_id}/reactions/stats')
@@ -41,7 +49,7 @@ def test_get_tweet_reaction_stats(client, redis_client):
 
     # Vérifier les statistiques
     assert response_data == {
-        "like": 10,
-        "love": 5,
+        "like": 5,
+        "love": 3,
         "haha": 2
     }

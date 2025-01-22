@@ -19,10 +19,10 @@ def add_reaction(comment_id):
             return jsonify({"error": "Les champs 'user_id' et 'reaction' sont obligatoires."}), 400
 
         # Appeler le service pour ajouter la réaction
-        success = add_reaction_to_comment(comment_id, user_id, reaction)
+        response = add_reaction_to_comment(comment_id, user_id, reaction)
 
-        if success:
-            return jsonify({"message": "Réaction ajoutée avec succès."}), 201
+        if response["success"]:
+            return jsonify({"message": "Réaction ajoutée avec succès.", "reaction_id": response["reaction_id"]}), 201
         else:
             return jsonify({"error": f"Commentaire avec l'ID {comment_id} introuvable."}), 404
     except Exception as e:

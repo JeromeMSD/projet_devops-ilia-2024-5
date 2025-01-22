@@ -12,3 +12,4 @@ def check_user_reaction():
     
     has_reacted = has_user_reacted(user_id, item_id, item_type, reaction)
     return jsonify({"has_reacted": has_reacted}), 200
+

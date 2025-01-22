@@ -2,6 +2,7 @@ import pytest
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
+from db.redis_client import get_redis_client
 
 from app import create_app
 import redis
@@ -9,7 +10,7 @@ import redis
 # Redis mock setup
 @pytest.fixture
 def redis_client():
-    client = redis.Redis(host='localhost', port=6379, db=0)
+    client = get_redis_client()
     client.flushdb()  # Nettoyer la base Redis avant chaque test
     return client
 
@@ -26,11 +27,14 @@ def test_get_comment_reaction_stats(client, redis_client):
     comment_id = "67890"
 
     # Simuler les statistiques des réactions dans Redis
-    redis_client.hset(f"comment:{comment_id}:reactions_stat", mapping={
-        "like": 3,
-        "love": 1,
-        "angry": 2
-    })
+    redis_client.rpush(f"reactions:comments:{comment_id}", *[
+        '{"reaction": "like"}',
+        '{"reaction": "like"}',
+        '{"reaction": "like"}',
+        '{"reaction": "love"}',
+        '{"reaction": "angry"}',
+        '{"reaction": "angry"}'
+    ])
 
     # Envoyer une requête GET à la route
     response = client.get(f'/comments/{comment_id}/reactions/stats')
